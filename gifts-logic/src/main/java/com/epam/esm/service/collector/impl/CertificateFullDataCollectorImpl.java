@@ -16,48 +16,48 @@ public class CertificateFullDataCollectorImpl implements CertificateFullDataColl
         addCertificateLastUpdateDate(certificateWithUpdate, actualCertificate);
         addCertificateTags(certificateWithUpdate, actualCertificate);
 
-        return actualCertificate;
+        return certificateWithUpdate;
     }
 
     private void addCertificateName(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getName() != null) {
-            actualCertificate.setName(certificateWithUpdate.getName());
+        if (certificateWithUpdate.getName() == null) {
+            certificateWithUpdate.setName(actualCertificate.getName());
         }
     }
 
     private void addCertificateDescription(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getDescription() != null) {
-            actualCertificate.setDescription(certificateWithUpdate.getDescription());
+        if (certificateWithUpdate.getDescription() == null) {
+            certificateWithUpdate.setDescription(actualCertificate.getDescription());
         }
     }
 
     private void addCertificateDuration(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getDuration() > 0) {
-            actualCertificate.setDuration(certificateWithUpdate.getDuration());
+        if (certificateWithUpdate.getDuration() == 0) {
+            certificateWithUpdate.setDuration(actualCertificate.getDuration());
         }
     }
 
     private void addCertificatePrice(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getPrice() != null) {
-            actualCertificate.setPrice(certificateWithUpdate.getPrice());
+        if (certificateWithUpdate.getPrice() == null) {
+            certificateWithUpdate.setPrice(actualCertificate.getPrice());
         }
     }
 
     private void addCertificateCreateDate(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getCreateDate() != null) {
-            actualCertificate.setCreateDate(certificateWithUpdate.getCreateDate());
+        if (certificateWithUpdate.getCreateDate() == null) {
+            certificateWithUpdate.setCreateDate(actualCertificate.getCreateDate());
         }
     }
 
     private void addCertificateLastUpdateDate(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getLastUpdateDate() != null) {
-            actualCertificate.setLastUpdateDate(certificateWithUpdate.getLastUpdateDate());
+        if (certificateWithUpdate.getLastUpdateDate() == null) {
+            certificateWithUpdate.setLastUpdateDate(actualCertificate.getLastUpdateDate());
         }
     }
 
     private void addCertificateTags(Certificate certificateWithUpdate, Certificate actualCertificate) {
-        if (certificateWithUpdate.getTags().size() > 0) {
-            actualCertificate.setTags(certificateWithUpdate.getTags());
+        if (certificateWithUpdate.getTags().isEmpty()) {
+            certificateWithUpdate.setTags(actualCertificate.getTags());
         }
     }
 }

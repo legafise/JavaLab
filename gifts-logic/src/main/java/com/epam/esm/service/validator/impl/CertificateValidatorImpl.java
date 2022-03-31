@@ -2,7 +2,7 @@ package com.epam.esm.service.validator.impl;
 
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.service.exception.InvalidCertificateException;
+import com.epam.esm.service.exception.InvalidEntityException;
 import com.epam.esm.service.validator.CertificateValidator;
 import org.springframework.stereotype.Component;
 
@@ -10,9 +10,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class CertificateValidatorImpl implements CertificateValidator {
+    private static final String CERTIFICATE_IS_NULL_MESSAGE = "certificate is null";
     private static final BigDecimal MIN_PRICE = new BigDecimal("1");
     private static final BigDecimal MAX_PRICE = new BigDecimal("100000");
     private static final long MIN_DURATION = 7;
@@ -26,7 +28,7 @@ public class CertificateValidatorImpl implements CertificateValidator {
     @Override
     public void validateCertificate(Certificate certificate) {
         if (certificate == null) {
-            throw new InvalidCertificateException("certificate is null");
+            throw new InvalidEntityException(Certificate.class, CERTIFICATE_IS_NULL_MESSAGE);
         }
 
         validateName(certificate.getName());
@@ -38,7 +40,7 @@ public class CertificateValidatorImpl implements CertificateValidator {
         validateTags(certificate.getTags());
 
         if (!invalidValues.isEmpty()) {
-            throw new InvalidCertificateException(collectCause(invalidValues));
+            throw new InvalidEntityException(Certificate.class, collectCause(invalidValues));
         }
     }
 
@@ -56,7 +58,7 @@ public class CertificateValidatorImpl implements CertificateValidator {
         return cause.toString();
     }
 
-    private void validateTags(List<Tag> tags) {
+    private void validateTags(Set<Tag> tags) {
         if (tags == null) {
             invalidValues.add("tags is null");
         }
@@ -81,15 +83,14 @@ public class CertificateValidatorImpl implements CertificateValidator {
     }
 
     private void validateName(String certificateName) {
-        if (!(certificateName != null && !certificateName.isEmpty() && certificateName.length() > 1
+        if (!(certificateName != null && certificateName.length() > 1
                 && certificateName.length() <= 100)) {
             invalidValues.add("name");
         }
     }
 
     private void validateDescription(String certificateDescription) {
-        if (!(certificateDescription != null && !certificateDescription.isEmpty()
-                && certificateDescription.length() >= 15 && certificateDescription.length() <= 500)) {
+        if (!(certificateDescription != null && certificateDescription.length() >= 15 && certificateDescription.length() <= 500)) {
             invalidValues.add("description");
         }
     }

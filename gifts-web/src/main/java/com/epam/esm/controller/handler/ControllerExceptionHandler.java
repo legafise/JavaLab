@@ -1,6 +1,7 @@
 package com.epam.esm.controller.handler;
 
 import com.epam.esm.controller.localizer.Localizer;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,60 +13,61 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.epam.esm.controller.handler.EntityErrorCode.*;
+
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     private final Localizer localizer;
     private static final String NUMBER_FORMAT_ERROR_MESSAGE = "invalid.number.value.was.entered";
-    private static final String CERTIFICATE_ERROR_CODE = "01";
-    private static final String TAG_ERROR_CODE = "02";
+    private static final String INVALID_CERTIFICATE_MESSAGE = "invalid.certificate";
 
     @Autowired
     public ControllerExceptionHandler(Localizer localizer) {
         this.localizer = localizer;
     }
 
-    @ExceptionHandler(InvalidCertificateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCertificateException(InvalidCertificateException e) {
-        String errorMessage = String.format(localizer.toLocale("invalid.certificate"), e.getMessage());
-        return getErrorResponse(errorMessage, HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
-    }
+    @ExceptionHandler(TypedServiceException.class)
+    public ResponseEntity<ErrorResponse> handleTypedServiceException(TypedServiceException e) {
+        if (e.getEntityClass().equals(Certificate.class) && e.getClass().equals(InvalidEntityException.class)) {
+            e = new TypedServiceException(e.getEntityClass(),
+                        String.format(localizer.toLocale(INVALID_CERTIFICATE_MESSAGE), e.getMessage()));
+            }
 
-    @ExceptionHandler(InvalidTagException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidTagException(InvalidTagException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, TAG_ERROR_CODE);
-    }
-
-    @ExceptionHandler(DuplicateTagException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateTagException(DuplicateTagException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.CONFLICT, TAG_ERROR_CODE);
-    }
-
-    @ExceptionHandler(DuplicateCertificateException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateCertificateException(DuplicateCertificateException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.CONFLICT, CERTIFICATE_ERROR_CODE);
+        return createErrorResponse(e.getMessage(), ExceptionErrorStatus.findHttpStatusByException(e),
+                EntityErrorCode.findErrorCodeByEntityClass(e.getEntityClass()).getErrorCode());
     }
 
     @ExceptionHandler(NumberFormatException.class)
-    public ResponseEntity<ErrorResponse> handleNumberFormatException() {
-        return getErrorResponse(NUMBER_FORMAT_ERROR_MESSAGE, HttpStatus.BAD_REQUEST, "");
+    public ResponseEntity<ErrorResponse> handleNumberFormatException(NumberFormatException e) {
+        return createErrorResponse(NUMBER_FORMAT_ERROR_MESSAGE, ExceptionErrorStatus.findHttpStatusByException(e),
+                DEFAULT_ERROR_CODE.getErrorCode());
     }
 
-    @ExceptionHandler(UnknownCertificateException.class)
-    public ResponseEntity<ErrorResponse> handleUnknownCertificateException(UnknownCertificateException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND, CERTIFICATE_ERROR_CODE);
+    @ExceptionHandler(NotEnoughMoneyException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughMoneyException(NotEnoughMoneyException e) {
+        return createErrorResponse(e.getMessage(), ExceptionErrorStatus.findHttpStatusByException(e),
+                USER_ERROR_CODE.getErrorCode());
     }
 
-    @ExceptionHandler(UnknownTagException.class)
-    public ResponseEntity<ErrorResponse> handleUnknownTagException(UnknownTagException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND, TAG_ERROR_CODE);
+    @ExceptionHandler(MissingPageNumberException.class)
+    public ResponseEntity<ErrorResponse> handleMissingPageNumberException(MissingPageNumberException e) {
+        return createErrorResponse(e.getMessage(), ExceptionErrorStatus.findHttpStatusByException(e),
+                DEFAULT_ERROR_CODE.getErrorCode());
     }
 
     @ExceptionHandler(InvalidSortParameterException.class)
     public ResponseEntity<ErrorResponse> handleInvalidSortParameterException(InvalidSortParameterException e) {
-        return getErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, CERTIFICATE_ERROR_CODE);
+        return createErrorResponse(e.getMessage(), ExceptionErrorStatus.findHttpStatusByException(e),
+                DEFAULT_ERROR_CODE.getErrorCode());
     }
 
-    private ResponseEntity<ErrorResponse> getErrorResponse(String messageCode, HttpStatus status, String errorCode) {
+    @ExceptionHandler(InvalidPaginationDataException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPaginationDataException(InvalidPaginationDataException e) {
+        return createErrorResponse(e.getMessage(), ExceptionErrorStatus.findHttpStatusByException(e),
+                DEFAULT_ERROR_CODE.getErrorCode());
+    }
+
+    private ResponseEntity<ErrorResponse> createErrorResponse(String messageCode, HttpStatus status, String errorCode) {
         String errorMessage = localizer.toLocale(messageCode);
 
         Map<String, String> responseBody = new HashMap<>();

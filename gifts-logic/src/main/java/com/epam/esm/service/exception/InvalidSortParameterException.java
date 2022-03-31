@@ -2,6 +2,7 @@ package com.epam.esm.service.exception;
 
 public class InvalidSortParameterException extends ServiceException {
     public InvalidSortParameterException() {
+        super();
     }
 
     public InvalidSortParameterException(String message) {
@@ -16,7 +17,7 @@ public class InvalidSortParameterException extends ServiceException {
         super(cause);
     }
 
-    public InvalidSortParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected InvalidSortParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

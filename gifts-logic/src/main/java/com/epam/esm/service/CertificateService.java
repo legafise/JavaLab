@@ -8,13 +8,13 @@ import java.util.Map;
 public interface CertificateService {
     Certificate addCertificate(Certificate certificate);
 
-    List<Certificate> findAllCertificates(Map<String, String> parameters);
+    List<Certificate> findAllCertificates(Map<String, String> parameters, List<String> tagNames);
 
     Certificate findCertificateById(long id);
 
     Certificate updateCertificate(Certificate certificate);
 
-    boolean removeCertificateById(long id);
+    void removeCertificateById(long id);
 
     Certificate patchCertificate(Certificate certificate);
 }

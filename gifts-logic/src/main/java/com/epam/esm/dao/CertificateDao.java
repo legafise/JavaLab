@@ -6,19 +6,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CertificateDao {
-    boolean add(Certificate certificate);
+    void add(Certificate certificate);
 
     Optional<Certificate> findById(long id);
 
-    List<Certificate> findAll();
+    List<Certificate> findAll(int page, int pageSize);
 
-    boolean update(Certificate certificate);
+    Certificate update(Certificate certificate);
 
-    boolean remove(long id);
+    void remove(long id);
 
     boolean addTagToCertificate(long certificateId, long tagId);
 
     boolean clearCertificateTags(long certificateId);
 
     Optional<Certificate> findByName(String name);
+
+    long findMaxCertificateId();
 }

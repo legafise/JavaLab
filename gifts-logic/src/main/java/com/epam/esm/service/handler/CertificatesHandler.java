@@ -10,15 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum CertificatesHandler {
-    FIND_BY_TAG_NAME("tagName") {
-        @Override
-        public List<Certificate> handle(List<Certificate> certificateList, String parameter) {
-            return certificateList.stream()
-                    .filter(currentCertificate -> currentCertificate.getTags().stream()
-                            .anyMatch(tag -> tag.getName().toUpperCase().equals(parameter.toUpperCase())))
-                    .collect(Collectors.toList());
-        }
-    },
     FIND_BY_NAME_PART("namePart") {
         @Override
         public List<Certificate> handle(List<Certificate> certificateList, String parameter) {
@@ -87,7 +78,7 @@ public enum CertificatesHandler {
     public static CertificatesHandler findHandlerByName(String handlerTypeName) {
         return Arrays.stream(values())
                 .filter(certificatesSortHandler -> certificatesSortHandler.getHandlerName()
-                        .toUpperCase().equals(handlerTypeName.toUpperCase()))
+                        .equalsIgnoreCase(handlerTypeName.toUpperCase()))
                 .findFirst()
                 .orElseThrow(() -> new InvalidSortParameterException(INVALID_HANDLER_MESSAGE));
     }
@@ -98,7 +89,7 @@ public enum CertificatesHandler {
             throw new InvalidSortParameterException(INVALID_SORT_PARAMETER_MESSAGE);
         }
 
-       return orderParameter.toUpperCase().equals(ASC_PARAMETER)
+       return orderParameter.equalsIgnoreCase(ASC_PARAMETER)
                ? certificateList
                : invertCertificateList(certificateList);
     }

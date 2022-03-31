@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -21,8 +22,14 @@ public class TagController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<Tag> readAllTags() {
-        return tagService.findAllTags();
+    public List<Tag> readAllTags(@RequestParam Map<String, String> paginationParameters) {
+        return tagService.findAllTags(paginationParameters);
+    }
+
+    @GetMapping("/widely-used-tag")
+    @ResponseStatus(OK)
+    public Tag readWidelyUsedTag() {
+        return tagService.findWidelyUsedTag();
     }
 
     @PostMapping
